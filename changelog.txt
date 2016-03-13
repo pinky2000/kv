@@ -1,0 +1,100 @@
+Changelog:
+Version 3.5 - Release 12.03.2016:
+-) Robustheitserhöhung bei Kundenvergleich der Online-Anmeldungen (ob es den Kunden schon in der DB gibt?) - Erweiterung durch trim()
+
+Version 3.5 - Release 06.03.2016:
+-) Links auf das Campblatt ausgebessert in Kundenformular und Kursblatt
+-) Kunden-Berichte erweitert für Campabfragen (Verpflegung/Campleiter/Transfers) 
+-) Statistik mit distinct erweitert
+
+Version 3.4 - Release 26.02.2016:
+Erweiterungen:
+-) Online Kursanmeldungen sind aktiv und funktional
+
+Version 3.3 - Release 24.02.2016:
+Erweiterungen:
+-) Campblatt ist verfügbar mit Differenzierung in Halbtages/Tages und Nächtigungscamps
+-) In Campverwaltung Erweiterung der Typen mit Camptypen, um die Campblätter zu differenzieren
+-) Perosnen Info Formular (inkl. Kommentierungs/Zimmereinteilungsmöglichkeit) ist erstellt
+
+Version 3.2 - Release 07.02.2016:
+sel_zertifikat_auswahl hinzugefügt in webregster_form, payment_form und booking_confirmation
+
+Version 3.2 - Release 06.02.2016:
+Erweiterung:
+Camp Online-Anmeldung ist nun funktional (inkl. Optionen und Rabatte in Werten)
+Die Summen werden automatisch berechnet (bis auf multiselect Auswahlfelder)
+
+Version 3.1 - Release 05.02.2016:
+Buchungsbestätigung nach Wünschen von Boris adaptiert (Formatierungen,…)
+Mail zum Kunden adaptiert
+Kommentarfeld bei den Zahlungen eingefügt, damit nachträgliche Änderungen kommentiert werden können, diese scheinen dann auch in der Buchungsbestätigung auf
+
+Version 3.1 - Release 04.02.2016:
+Erweiterungen:
+Buchungsbestätigung online
+Telefon2 und Land hinzugefügt bei Onlineanmeldung
+Rabatte und Optionen umgestellt auf Werte (statt 1/0) - Konsistenz zw. Anmeldung und Kurseingaben sichergestellt
+Modul4 bei Campverwaltung hinzugefügt
+
+Version 3.1 - Release 28.01.2016:
+Erweiterung:
+Campblatt aktiviert - ohne Erweiterungen
+Online_visible bei Camps und Kurse hinzugefügt
+
+Version 3.1 - Release 26.01.2016:
+Erweiterung:
+Modul3 bei Campverwaltung hinzugefügt
+
+Version 3.1 - Release 22.01.2016:
+Erweiterungen:
+Online-Kurs-Anmeldung Prüfformular erstellt
+
+Version 3.1 - Release 11.01.2016:
+Korrekturen:
+Buttons im Campverwaltung wurden angepasst
+Kurskopie wurde mit zusätzlichen Feldern erweitert
+
+Erweiterungen:
+Beginn und Endespalten bei den Camps hinzugefügt
+
+Version 3.1 - Release 10.01.2016:
+Online-Anmeldung für Campanmeldungen ist produktiv
+
+Korrekturen:
+kleine Korrekturen in Kundenformular (zwecks Berechnung der Saldi) und Kursblatt (Doppeleinträge wegen Doppelzahlungen)
+
+Version 3.0 - Release 29.12.2015:
+Neuerung:
+-) Neues Zahlungen-Formular mit Unterstützung von Mehrfachzahlungseingängen
+
+
+Version 3.0 - Release 23.11.2015:
+Korrekturen:
+-) Verbesserung Sessionmanagement - Fehlermeldung "no database selected" behoben
+-) Institution: Link-Feld korrigiert
+-) Zeitperiode: Eingabe korrigiert
+-) Statistik-Bereich aktiviert
+
+Neuerungen:
+-) Kurse im Kursblatt werden nun nach Jahr, Zeitperiode und Produkt sortiert
+-) Bei den Kursblättern der Mitarbeiter werden nur die Kurse der letzten 2 Jahre angezeigt
+-) Mitarbeiter: Produkte alphabetisch sortiert
+-) Monatsabrechung: Beträge werden auf ganze Euro gerundet
+-) Zeitperiode: Neues Häckchen Camp gibt an, ob die Zeitperiode für ein Camp oder für einen Kurs verwendet wird
+
+Beta-Phase:
+-) NEU Campverwaltung testweise für "Boris" freigeschaltet
+
+
+Version 3.0 - Release 06.11.2015:
+-) Changelog online verfügbar hinzugefügt
+-) div. Fixes (Kursblatt, Kurse)
+-) Bei Kurskopie wird der Trainer nicht mehr mitkopiert
+-) Darstellung der Kurstermine in der Kursverwaltung und im Kursblatt nach Datum aufsteigend
+-) Timeout Mechanismus hinzugefügt (30min für Mitarbeiter, 4h für Admin und Verwaltung)
+
+
+Version 3.0 - Release 04.10.2015:
+Überarbeitung der Kv auf PHP 5.0 und MySQL 5.0 - go online...
+
