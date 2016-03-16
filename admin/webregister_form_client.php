@@ -93,10 +93,13 @@ if ($print_debug==1) { var_dump($_POST);print("<br><br>");}
 // Delete-Button wird gedrückt
 if (isset($delete_x))
 {
-        if ($confirm=="true" && $web[id]>0)
+        if ($confirm=="true" && $id>0)
         {
-		    $sql_webregister_finish = "update web_camp set status='Storno', reg_date=sysdate(), reg_user='$change_user' where id=".$web[id];
-		    $rs_webregister_finish=getrs($sql_webregister_finish,$print_debug,$print_error);
+			for ($count_del=0;$count_del<$web_count;$count_del++)
+			{
+				$sql_webregister_finish = "update web_camp set status='Storno', reg_date=sysdate(), reg_user='$change_user' where id=".$web[$count_del][id];
+				$rs_webregister_finish=getrs($sql_webregister_finish,$print_debug,$print_error);
+			}
            if ($rs_delete->errno==0)
                   ok_site($back_url);
            else
@@ -171,65 +174,90 @@ elseif (isset($save_x))
  
 // Module...
 // var_dump($opt_nachmittag_select); 
-
-  $web[opt][nachmittag_auswahl]=$opt_nachmittag_select[0];
-  for ($i=1;$i<=count($opt_nachmittag_select);$i++)
+for ($count_save=0;$count_save<$web_count;$count_save++)
+{
+  if ($web[$count_save][action]=="save")
   {
-	$web[opt][nachmittag_auswahl]=$web[opt][nachmittag_auswahl].";".$opt_nachmittag_select[$i];
-  } 
-  $web[opt][lernmodul_auswahl]=$opt_lernmodul_select[0];
-  for ($i=1;$i<=count($opt_lernmodul_select);$i++)
+	  $web[$count_save][opt][nachmittag_auswahl]=$opt_nachmittag_select[0];
+	  for ($i=1;$i<=count($opt_nachmittag_select);$i++)
+	  {
+		$web[$count_save][opt][nachmittag_auswahl]=$web[$count_save][opt][nachmittag_auswahl].";".$opt_nachmittag_select[$i];
+	  } 
+	  $web[$count_save][opt][lernmodul_auswahl]=$opt_lernmodul_select[0];
+	  for ($i=1;$i<=count($opt_lernmodul_select);$i++)
+	  {
+		$web[$count_save][opt][lernmodul_auswahl]=$web[$count_save][opt][lernmodul_auswahl].";".$opt_lernmodul_select[$i];
+	  } 
+	  $web[$count_save][opt][modul3_auswahl]=$opt_modul3_select[0];
+	  for ($i=1;$i<=count($opt_modul3_select);$i++)
+	  {
+		$web[$count_save][opt][modul3_auswahl]=$web[$count_save][opt][modul3_auswahl].";".$opt_modul3_select[$i];
+	  } 
+	  $web[$count_save][opt][modul4_auswahl]=$opt_modul4_select[0];
+	  for ($i=1;$i<=count($opt_modul4_select);$i++)
+	  {
+		$web[$count_save][opt][modul4_auswahl]=$web[$count_save][opt][modul4_auswahl].";".$opt_modul4_select[$i];
+	  } 
+
+	  $sql_last_element="select rechnung_id from payments order by rechnung_id desc limit 1";
+	  $rs_last_element=getrs($sql_last_element,$print_debug,$print_error);
+	  list($last_id)=$rs_last_element->fetch_row();
+	  $new_id=$last_id+1;
+
+	  $sql_payment_insert="
+				insert into payments
+	               (rechnung_id,clients_id,courses_id,billdate,amount,sconto_id,sconto_amount,opt_amount,client_price,remarks,status,mahnung_sent1,mahnung_sent2,
+				    mahnung_sent3,mahnung_comment,rab_earlybook,rab_lastminute,rab_stammkunde,rab_geschwister,rab_kombi1,rab_kombi2,rab_verlaengerung,rab_halbtag,rab_firmen,rab_sonder,create_date,reg_date,reg_user,web_camp_id,register)
+	            values
+				   ('$new_id','".$web[sim_name_id]."','".$web[$count_save][courses_id]."','0000-00-00','0','0','0','0','$web[price]','$web[remarks]','F','0','0','0','0','"
+	.$web[$count_save][rab][early]."','".$web[$count_save][rab][last]."','".$web[$count_save][rab][stamm]."','".$web[$count_save][rab][gesch]."','".$web[$count_save][rab][kombi1]."','".$web[$count_save][rab][kombi2]."','".$web[$count_save][rab][verl]."','".$web[$count_save][rab][halb]."','".$web[$count_save][rab][firmen]."','".$web[$count_save][rab][sonder]."',sysdate(),sysdate(),'$change_user','".$web[$count_save][id]."','on')";
+	  $rs_payment_insert=getrs($sql_payment_insert,$print_debug,$print_error);
+
+	  $sql_payment_options_insert="
+				insert into payments_opt_camps
+	               (rechnung_id,sel_verpflegung,sel_nachmittag,sel_nachmittag_auswahl,sel_lernmodul,sel_lernmodul_auswahl,sel_modul3,sel_modul3_auswahl,sel_modul4,sel_modul4_auswahl,sel_flughafen_hin,sel_flughafen_ret,sel_flughafen_hin_minor,sel_flughafen_ret_minor,sel_bahnhof_hin,sel_bahnhof_ret,sel_zertifikat,sel_zertifikat_auswahl)
+	            values
+				   ('$new_id','".$web[$count_save][opt][verpflegung]."','".$web[$count_save][opt][nachmittag]."','".$web[$count_save][opt][nachmittag_auswahl]."','".$web[$count_save][opt][lernmodul]."','".$web[$count_save][opt][lernmodul_auswahl]."','".$web[$count_save][opt][modul3]."','".$web[$count_save][opt][modul3_auswahl]."','".$web[$count_save][opt][modul4]."','".$web[$count_save][opt][modul4_auswahl]."','".$web[$count_save][opt][trans_flug_hin]."','".$web[$count_save][opt][trans_flug_ret]."','".$web[$count_save][opt][trans_flug_hin_minor]."','".$web[$count_save][opt][trans_flug_ret_minor]."','".$web[$count_save][opt][trans_bahn_hin]."','".$web[$count_save][opt][trans_bahn_ret]."',
+					'".$web[$count_save][opt][zertifikat]."','".$web[$count_save][opt][zertifikat_auswahl]."')";
+	  $rs_payment_options_insert=getrs($sql_payment_options_insert,$print_debug,$print_error);
+
+	  $sql_webregister_finish = "update web_camp set rechnung_id='$new_id', status='Bearbeitet', reg_date=sysdate(), reg_user='$change_user' where id=".$web[$count_save][id];
+	  $rs_webregister_finish=getrs($sql_webregister_finish,$print_debug,$print_error);
+  }
+  else if ($web[$count_save][action]=="del")  
   {
-	$web[opt][lernmodul_auswahl]=$web[opt][lernmodul_auswahl].";".$opt_lernmodul_select[$i];
-  } 
-  $web[opt][modul3_auswahl]=$opt_modul3_select[0];
-  for ($i=1;$i<=count($opt_modul3_select);$i++)
+	$sql_webregister_finish = "update web_camp set status='Storno', reg_date=sysdate(), reg_user='$change_user' where id=".$web[$count_save][id];
+	$rs_webregister_finish=getrs($sql_webregister_finish,$print_debug,$print_error);
+  }
+  else
   {
-	$web[opt][modul3_auswahl]=$web[opt][modul3_auswahl].";".$opt_modul3_select[$i];
-  } 
-  $web[opt][modul4_auswahl]=$opt_modul4_select[0];
-  for ($i=1;$i<=count($opt_modul4_select);$i++)
-  {
-	$web[opt][modul4_auswahl]=$web[opt][modul4_auswahl].";".$opt_modul4_select[$i];
-  } 
+	  print("ERROR while saving...sorry!");die;
+  }	  
 
-  $sql_last_element="select rechnung_id from payments order by rechnung_id desc limit 1";
-  $rs_last_element=getrs($sql_last_element,$print_debug,$print_error);
-  list($last_id)=$rs_last_element->fetch_row();
-  $new_id=$last_id+1;
-
-  $sql_payment_insert="
-			insert into payments
-               (rechnung_id,clients_id,courses_id,billdate,amount,sconto_id,sconto_amount,opt_amount,client_price,remarks,status,mahnung_sent1,mahnung_sent2,
-			    mahnung_sent3,mahnung_comment,rab_earlybook,rab_lastminute,rab_stammkunde,rab_geschwister,rab_kombi1,rab_kombi2,rab_verlaengerung,rab_halbtag,rab_firmen,rab_sonder,create_date,reg_date,reg_user,web_camp_id,register)
-            values
-			   ('$new_id','$web[sim_name_id]','$web[courses_id]','0000-00-00','0','0','$web[sconto_value]','$web[opt_value]','$web[price]','$web[remarks]','F','0','0','0','0','"
-.$web[rab][early]."','".$web[rab][last]."','".$web[rab][stamm]."','".$web[rab][gesch]."','".$web[rab][kombi1]."','".$web[rab][kombi2]."','".$web[rab][verl]."','".$web[rab][halb]."','".$web[rab][firmen]."','".$web[rab][sonder]."',sysdate(),sysdate(),'$change_user','".$id."','on')";
-  $rs_payment_insert=getrs($sql_payment_insert,$print_debug,$print_error);
-
-  $sql_payment_options_insert="
-			insert into payments_opt_camps
-               (rechnung_id,sel_verpflegung,sel_nachmittag,sel_nachmittag_auswahl,sel_lernmodul,sel_lernmodul_auswahl,sel_modul3,sel_modul3_auswahl,sel_modul4,sel_modul4_auswahl,sel_flughafen_hin,sel_flughafen_ret,sel_flughafen_hin_minor,sel_flughafen_ret_minor,sel_bahnhof_hin,sel_bahnhof_ret,sel_zertifikat,sel_zertifikat_auswahl)
-            values
-			   ('$new_id','".$web[opt][verpflegung]."','".$web[opt][nachmittag]."','".$web[opt][nachmittag_auswahl]."','".$web[opt][lernmodul]."','".$web[opt][lernmodul_auswahl]."','".$web[opt][modul3]."','".$web[opt][modul3_auswahl]."','".$web[opt][modul4]."','".$web[opt][modul4_auswahl]."','".$web[opt][trans_flug_hin]."','".$web[opt][trans_flug_ret]."','".$web[opt][trans_flug_hin_minor]."','".$web[opt][trans_flug_ret_minor]."','".$web[opt][trans_bahn_hin]."','".$web[opt][trans_bahn_ret]."',
-				'".$web[opt][zertifikat]."','".$web[opt][zertifikat_auswahl]."')";
-  $rs_payment_options_insert=getrs($sql_payment_options_insert,$print_debug,$print_error);
-
-  $sql_webregister_finish = "update web_camp set rechnung_id='$new_id', status='Bearbeitet', reg_date=sysdate(), reg_user='$change_user' where id=".$id;
-  $rs_webregister_finish=getrs($sql_webregister_finish,$print_debug,$print_error);
+  $id_link.="id".$count_save."=".$web[$count_save][id]."&";
+  $id_sql.="'".$web[$count_save][id]."',";
+} // nächste ANmeldung des gleichen Kunden
 
   // Absenden der Bestätigungsmail
   
-  $sql_mailinfo="select a.name,b.year,c.name from products a, courses b, timeperiods c where b.id=".$web[courses_id]." and a.id=b.products_id and b.timeperiods_id=c.id";
+  $sql_mailinfo="select a.name,b.year,c.name from products a, courses b, timeperiods c where b.id in (".$id_sql."'-1') and a.id=b.products_id and b.timeperiods_id=c.id";
   $rs_mailinfo=getrs($sql_mailinfo,$print_debug,$print_error);
-  list($productinfo,$yearinfo,$timeinfo)=$rs_mailinfo->fetch_row();
+  $num_courses = $rs_mailinfo->num_rows;
+  while ($rs_mailinfo->num_rows >0 && list($productinfo,$yearinfo,$timeinfo)=$rs_mailinfo->fetch_row())
+  {
+	  $productinfo_string.=$productinfo." / ".$yearinfo." / ".$timeinfo."<br>";
+  }
+  if ($num_courses>1) { $mail_product_text="folgenden Camps";$mail_product_text_eng="camps";} else { $mail_product_text="folgendem Camp";$mail_product_text_eng="camp"; }
   
   if ($web[sex]==1) { $gender="Ihres Sohnes";} else { $gender="Ihrer Tochter";}
   
-  $betreff = "Buchungsbestaetigung / Booking confirmation ".$productinfo." / ".$timeinfo." / ".$yearinfo;
-  $link=base64_encode("print_debug=0&id=".$id); 
-  $absenderadresse = 'camps@teamactivities.at';
-  $absendername = 'camps@teamactivities.at';
+  $betreff = "Buchungsbestaetigung fuer / Booking confirmation for ".$web[firstname]." ".$web[lastname];
+  $link=base64_encode("print_debug=0&".$id_link); 
+//  $absenderadresse = 'camps@teamactivities.at';
+//  $absendername = 'camps@teamactivities.at';
+
+  $absenderadresse = 'riegler.ewald@gmx.net';
+  $absendername = 'riegler.ewald@gmx.net';
 
   $header = array();
   $header[] = "From: ".mb_encode_mimeheader($absendername, "iso-8859-1", "Q")." <".$absenderadresse.">";
@@ -240,7 +268,9 @@ elseif (isset($save_x))
   $text = "
   Sehr geehrte Familie ".$web[lastname_parent].",
   
-  vielen herzlichen Dank f&uuml;r die Anmeldung ".$gender." ".$web[firstname]." bei unserem ".$productinfo." ! 
+  vielen herzlichen Dank f&uuml;r die Anmeldung ".$gender." ".$web[firstname]." bei ".$mail_product_text.": 
+  ".$productinfo_string."
+  
   Mit den folgenden Links schicke ich Ihnen die Buchungsbest&auml;tigung sowie Tipps und Informationen.
 
   Buchungsbest&auml;tigung:
@@ -248,14 +278,16 @@ elseif (isset($save_x))
   Tips und Informationen:
   http://www.teamactivities.at/informationsmappe.php
  
-  Wir w&uuml;nschen ".$web[firstname]." viel Spa&szlig; bei unserem ".$productinfo." ! 
+  Wir w&uuml;nschen ".$web[firstname]." viel Spa&szlig; bei ".$mail_product_text." ! 
   Bei R&uuml;ckfragen stehen wir Ihnen sehr gerne telefonisch oder per Email zur Verf&uuml;gung.
 
  -----------------------------------------------------------------------------------------------------------------------------
  
   Dear Mr and Ms ".$web[lastname_parent].",
 
-  Thank you for booking our ".$productinfo." !
+  Thank you for booking our ".$mail_product_text_eng." !
+  ".$productinfo_string."
+  
   Below you find the links to your booking confirmation for ".$web[firstname]." as well as our brochure &quot;Tips and<br>information&quot;.
 
   Booking confirmation:
@@ -263,7 +295,7 @@ elseif (isset($save_x))
   Tips and informations:
   http://www.teamactivities.at/informationsmappe.php
 
-  We wish ".$web[firstname]." a lot of fun at our ".$productinfo." !
+  We wish ".$web[firstname]." a lot of fun at our ".$mail_product_text_eng." !
   If you have any questions please don&apos;t hesitate to contact me.
 
   Beste Gr&uuml;&szlig;e / Best regards from Vienna,
@@ -281,7 +313,8 @@ elseif (isset($save_x))
   ";
   $text = str_replace("<br>", "\n", $text);
   
-  mail("camps@teamactivities.at", mb_encode_mimeheader($betreff, "iso-8859-1", "Q"), html_entity_decode($text), implode("\n", $header));
+//  mail("camps@teamactivities.at", mb_encode_mimeheader($betreff, "iso-8859-1", "Q"), html_entity_decode($text), implode("\n", $header));
+  mail("riegler.ewald@gmx.net", mb_encode_mimeheader($betreff, "iso-8859-1", "Q"), html_entity_decode($text), implode("\n", $header));
   $email=trim($web[email]);
   mail($email, mb_encode_mimeheader($betreff, "iso-8859-1", "Q"), html_entity_decode($text), implode("\n", $header));
   
@@ -409,7 +442,7 @@ if ((!isset($save_x)) && (!$update) && ($rs_client_select->num_rows==0))
 	</TR>
 
 <?
-	$web_count=1;
+	$web_count=0;
 	while ($rs_client_select>0 && LIST($web[$web_count][id],$web[web_clients_id],$web[$web_count][courses_id],$web[$web_count][price],
 				$web[$web_count][rab][early],$web[$web_count][rab][last],$web[$web_count][rab][stamm],$web[$web_count][rab][gesch],$web[$web_count][rab][kombi1],
 				$web[$web_count][rab][kombi2],$web[$web_count][rab][verl],$web[$web_count][rab][halb],$web[$web_count][rab][firmen],$web[$web_count][rab][sonder],
@@ -423,7 +456,7 @@ if ((!isset($save_x)) && (!$update) && ($rs_client_select->num_rows==0))
 				$firstname=ucfirst($web[firstname]);
 				$lastname=strtoupper($web[lastname]);
 ?>
-<?if ($web_count==1)
+<?if ($web_count==0)
 {
 ?>	
 	<TR>
@@ -435,8 +468,8 @@ if ((!isset($save_x)) && (!$update) && ($rs_client_select->num_rows==0))
 		<td WIDTH=1 class=news_border><IMG SRC="../images/black.gif" HEIGHT=1 WIDTH=1></TD>
 		<TD width=250  class=form_row>
 		<TABLE><TR><TD WIDTH=100% HEIGHT=100%>
-		<input type=hidden name=web[id] value=<?echo $web[id]?>>	
-		<?echo $web[id]?>
+		<input type=hidden name=web[web_clients_id] value=<?echo $web[web_clients_id]?>>	
+		<?echo $web[web_clients_id]?>
 		<?if ((isset($save_x))||($web[status]=="Bearbeitet")) { print("<font color=red>Diese Anmeldung wurde bereits in die DB &uuml;bernommen!</font>");}?> 
 		</TD></TR>
 		</TABLE>
@@ -1114,7 +1147,8 @@ if ((isset($web[firstname]) && isset($web[lastname])) && $web[status]=="Neu")
 		<TD width=250  class=form_row>
 		<TABLE>
 			<TR><TD WIDTH=100% HEIGHT=100%>
-			<? echo $web_count; ?>
+			<input type=hidden name=web[<?echo $web_count?>][id] value=<?echo $web[$web_count][id]?>>	
+			<? echo ($web_count+1); ?>
 			</TD></TR>
 		</TABLE>
 		</TD>
@@ -1411,14 +1445,36 @@ for ($i=0;$i<count($m1_split);$i++)
 	<tr>
 		<td colspan=3 HEIGHT=1 class=news_border><IMG SRC="../images/black.gif" HEIGHT=1 WIDTH=1></TD>
 	</TR>
+	<TR>
+		<TD width=150 ALIGN=RIGHT   class=form_header >
+		<TABLE>
+			<TR><TD WIDTH=100% HEIGHT=100%><font color=red>Aktion: <br>
+				<SELECT NAME=web[<?print($web_count);?>][action]>
+					<OPTION VALUE="save">Speichern</OPTION>
+					<OPTION VALUE="del">Stornieren</OPTION>
+				</font></TD></TR>
+		</TABLE>
+		</TD>
+		<td WIDTH=1 class=news_border><IMG SRC="../images/black.gif" HEIGHT=1 WIDTH=1></TD>
+		<TD width=250  class=form_row>
+		<TABLE>
+			<TR><TD WIDTH=100% HEIGHT=100%>
+		</TD></TR>
+		</TABLE>
+		</TD>
+	</TR>
+	<tr>
+		<td colspan=3 HEIGHT=1 class=news_border><IMG SRC="../images/black.gif" HEIGHT=1 WIDTH=1></TD>
+	</TR>
 	<tr>
 		<td colspan=3 HEIGHT=1 class=news_border><IMG SRC="../images/black.gif" HEIGHT=1 WIDTH=1></TD>
 	</TR>
 
 <?
-	$web_count++;
+	$id_link.="id".$web_count."=".$web[$web_count][id]."&";
 
-} // ende while ?>
+	$web_count++;
+} // ende while - die nächste Anmeldung ! ?>
 
 <!-- 
 Der Aktiv status wird nicht mehr verwendet, bleibt aber im Hintergrund erhalten (Standard ist aktiv=checked!), da gelschte Datenstze auch Entfernt gesetzt werden und nicht physikalisch gelscht werden!!!
@@ -1471,16 +1527,17 @@ Der Aktiv status wird nicht mehr verwendet, bleibt aber im Hintergrund erhalten 
 		<TABLE WIDTH=100% HEIGHT=100%>
 		<TR>
 <?
-$link=base64_encode("print_debug=0&id=".$id);  // $web[rechnung_id] zukünftig !
+$link=base64_encode("print_debug=0&".$id_link);  // $web[rechnung_id] zukünftig !
 if ((!isset($save_x)) && (($web[status]=="Neu") || ($web[status]==""))) {?>
-<!--			<TD ALIGN=CENTER><INPUT TYPE="IMAGE" NAME="save" src="../images/buttons/send.gif"></TD> 
-			<TD ALIGN=CENTER><INPUT TYPE="IMAGE" NAME="delete" src="../images/buttons/delete.gif" onClick="delete_form()"></TD> -->
+			<TD ALIGN=CENTER><INPUT TYPE="IMAGE" NAME="save" src="../images/buttons/send.gif"></TD> 
+			<TD ALIGN=CENTER><INPUT TYPE="IMAGE" NAME="delete" src="../images/buttons/delete.gif" onClick="delete_form()"></TD>
 <? }?>
 			<TD ALIGN=CENTER>
 <? if (($web[rechnung_id]!="") && ($web[rechnung_id]>0))
 {?>
 <a target=_blank href='http://www.teamactivities.at/online/booking_confirmation.php?data=<?print($link)?>'>Buchungsbest&auml;tigung 
 <?}?>
+				<INPUT TYPE="text" NAME="web_count" value=<?echo $web_count?>>
 				<INPUT TYPE="HIDDEN" NAME="confirm" value=0>
 				<INPUT TYPE="HIDDEN" NAME="web[status]" value=<?echo $web[status]?>>
 				<INPUT TYPE="HIDDEN" NAME="print_debug" value=<?echo $print_debug?>>
